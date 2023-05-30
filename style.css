@@ -1,0 +1,170 @@
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+.map-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.8);
+  margin-right: 20px;
+  font-size: 16px;
+  font-family: Trebuchet MS, sans-serif;
+  overflow: auto;
+  border-radius: 12px;
+}
+
+#title {
+  top: 0;
+  left: 20px;
+  height: 45px;
+  margin-top: 20px;
+  width: 440px;
+}
+
+#description {
+  top: 50px;
+  left: 20px;
+  height: 136px;
+  margin-top: 20px;
+  margin-right: 10px;
+  width: 400px;
+  text-align: justify;
+}
+
+.description h3 {
+  margin: 10px;
+  font-family: Trebuchet MS, sans-serif;
+  text-align: justify;
+}
+
+#no_data {
+  top: 518px;
+  left: 20px;
+  height: 78px;
+  margin-top: 20px;
+  margin-right: 10px;
+  width: 160px;
+  text-align: justify;
+}
+
+.map-overlay h7 {
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  font-family: Trebuchet MS, sans-serif;
+  font-size: 12px;
+  position: absolute;
+  text-align: justify;
+}
+
+.map-overlay h3 {
+  margin-left: 10px;
+  margin-right: 10px;
+  font-family: Trebuchet MS, sans-serif;
+  font-size: 12px;
+}
+
+#datasource {
+  top: 192px;
+  left: 20px;
+  height: 88px;
+  margin-top: 20px;
+  width: 274px;
+}
+
+.map-overlay h4 {
+  margin-left: 10px;
+  margin-right: 10px;
+  font-family: Trebuchet MS, sans-serif;
+  font-size: 12px;
+}
+
+#slide_bar {
+  top: 285px;
+  left: 20px;
+  height: 85px;
+  margin-top: 20px;
+  width: 230px;
+}
+
+#legend {
+  padding: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  line-height: 18px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  top: 375px;
+  left: 20px;
+  height: 118px;
+  margin-top: 20px;
+  width: 138px;
+  position: absolute;
+  right: 10px;
+  z-index: 1;
+  font-family: Trebuchet MS, sans-serif;
+  font-size: 12px;
+}
+
+.legend h6 {
+  margin: 0 0 2px;
+  font-size: 14px;
+}
+
+.legend-circle {
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.legend-status span {
+  margin-left: 5px;
+  display: inline-block;
+  vertical-align: middle;
+  font-family: Trebuchet MS, sans-serif;
+  font-size: 12px;
+}
+
+.map-overlay input {
+  background-color: transparent;
+  display: inline-block;
+  width: 90%;
+  position: relative;
+  margin: 10px;
+  cursor: ew-resize;
+}
+
+.wind_speed {
+  font-family: Trebuchet MS, sans-serif;
+}
+
+h2 {
+  margin: 10px;
+  font-size: 20.5px;
+  text-align: left;
+}
+
+h5 {
+  margin: 10px;
+  font-size: 1em;
+  text-align: left;
+  width: 210px;
+}
+
+.mapboxgl-popup {
+  max-width: 200px;
+}
+
+.mapboxgl-popup-content {
+  text-align: center;
+  font-family: Trebuchet MS, sans-serif;
+  height: 13px;
+}
+
+.mapboxgl-ctrl-top-right {
+  top: 10px;
+  right: 10px;
+}
