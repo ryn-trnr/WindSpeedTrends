@@ -1,0 +1,192 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+ <meta charset='utf-8' />
+ <!--Link to all external resources needed including your own external .css file -->
+ <script src='https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css' rel='stylesheet' />
+ <link rel="stylesheet" type="text/css" href="style.css">
+
+ <!-- Add a title to your web page - and your Student name and ID -->
+ <title> GEOM2069 Interactive Mapping Assignment, RYAN TURNER, s3924894 </title>
+
+</head>
+
+<body>
+
+<!--Initiate you map and any other html elements here -->
+<div id='map'></div>
+
+<div class="map-overlay" id='title'>
+  <h2>Grattan Street's Wind Speed Trends in 2020</h2>
+</div>
+
+<div class="map-overlay" id='description'>
+  <h3>Melbourne is often described as a city with four seasons in one day. Rapid changes in daily climate conditions such as wind speeds are a common occurrence. The monthly averages of wind speed data collected by microclimate sensors during the year 2020 on Grattan Street in Carlton have been illustrated.<br><br>Explore the interactive map by changing the month with the slider and clicking on the four different sensors.</h3>
+</div>
+
+<div class="map-overlay" id='datasource'>
+  <h4>All data sourced from the City of Melbourne:<br><a href='https://data.melbourne.vic.gov.au/Environment/Microclimate-Sensor-Readings/u4vh-84j8'>Microclimate Sensor Readings</a><br><a href='https://data.melbourne.vic.gov.au/Property/2018-Building-Footprints/pq2z-35fu'>Building Footprint Data</a><br><a href='https://data.melbourne.vic.gov.au/Environment/Tree-canopies-2019/tq3k-d7n7'>Tree Canopy Dataset</a><br></h4>
+</div>
+
+<div class="map-overlay" id='slide_bar'>
+  <h5>Month Slider: <label id="active-month">January</label></h5>
+  <input id="slider" type="range" min="0" max="11" step="1" value="0" />
+</div>
+
+<div id='legend' class='legend'>
+  <h6>Average Wind Speed</h6>
+</div>
+
+<div class='map-overlay' id='no_data'>
+  <h7>NOTE: no data is available for the sensor at 141 Grattan Street from Sep. to Dec.</h7>
+</div>
+
+<!-- All the Mapbox GL JS syntax goes inside the script tag for loading the map or interacting with it -->
+<script>
+
+mapboxgl.accessToken = 'pk.eyJ1IjoidHVybmVycnlhbiIsImEiOiJjbDBlejV6dHUwbnl2M2twZjY0emNyNzFzIn0.eY8qChouowGfIa5JVWzlAQ';
+//create link to mapbox style
+var map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/turnerryan/cl3wddt6e000b14p56t2ypirn',
+  center: [144.965332, -37.800443],
+  zoom: 17.2
+});
+//create variable consisting of month names for the slider UI
+const months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
+];
+//load map data from mapbox style and tilesets
+map.on('load', () => {
+  //create variables for the legend
+  var windSpeeds = ['< 2 km/h', '< 4 km/h', '< 6 km/h'];
+  var circleColours = ['#fed976', '#fd8d3c', '#e31a1c'];
+  var circleRadius = [14, 20, 26];
+  //filter to only show data by one month at a time
+  let filterMonth = ['==', ['number', ['get', 'month_number']], 0];
+  //add weather data
+  map.addSource('weather_data', {
+    type: 'vector',
+    url: 'mapbox://turnerryan.br5oyfql'
+  });
+  //add sensor point data
+  map.addLayer({
+    'id': 'sensor',
+    'type': 'circle',
+    'source': 'weather_data',
+    'source-layer': 'source_data-6f6915',
+    'paint': {
+      'circle-color': {
+        property: 'average_wind_speed',
+        type: 'interval',
+        stops: [
+          [2, '#fed976'], //at least 2km/h
+          [4, '#fd8d3c'], //at least 4km/h
+          [6, '#e31a1c'] //at least 6km/h
+          //['#756bb1']
+          //[{value:'no data'}, '#756bb1']
+        ]
+      },
+      'circle-opacity': 0.7,
+      'circle-radius': {
+        property: 'average_wind_speed',
+        type: 'interval',
+        stops: [
+          [2, 14], //when speed is at least 2km/h, set radius to 14px
+          [4, 20], //when speed is at least 4km/h, set radius to 20px
+          [6, 26], //when speed is at least 6km/h, set radius to 26px
+          //[{value:'no data'}, '#756bb1']
+        ]
+      }
+    },
+    'filter': filterMonth //filter to only show data set by filterMonth
+  });
+  //add wind speed value
+  map.addLayer({
+    'id': 'wind_speed',
+    'type': 'symbol',
+    'source': 'weather_data',
+    'source-layer': 'source_data-6f6915',
+    'layout': {
+      'text-field': ['concat', ['to-number', ['get', 'average_wind_speed']]],
+      'text-size': 12
+    },
+    'paint': {
+      'text-color': 'rgba(0, 0, 0, 0.9)'
+    },
+    'filter': filterMonth //filter to only show data set by filterMonth
+  });
+  // update month filter when the slider is dragged
+  document.getElementById('slider').addEventListener('input', (event) => {
+    const monthNumber = parseInt(event.target.value);
+    // update the map
+    filterMonth = ['==', ['number', ['get', 'month_number']], monthNumber];
+    map.setFilter('sensor', filterMonth);
+    map.setFilter('wind_speed', filterMonth);
+    // update month slider text in the UI
+    document.getElementById('active-month').textContent = months[monthNumber];
+  });
+  //style legend variables
+  for (i = 0; i < windSpeeds.length; i++) {
+    var windSpeed = windSpeeds[i];
+    var circleColour = circleColours[i];
+    var diameter = circleRadius[i] * 0.75;
+    var setmargin = 0 + ((20 - diameter) / 2);
+    var item = document.createElement('div');
+    item.className = 'legend-status';
+    var key = document.createElement('span');
+    key.className = 'legend-circle';
+    key.style.width = diameter + 'px';
+    key.style.height = diameter + 'px';
+    key.style.backgroundColor = circleColour;
+    key.style.opacity = 0.7;
+    key.style.marginLeft = setmargin + 10 + 'px';
+    key.style.marginTop = setmargin + 10 + 'px';
+    var value = document.createElement('span');
+    value.style.marginLeft = setmargin + 10 + 'px';
+    value.style.marginTop = setmargin + 10 + 'px';
+    value.innerHTML = windSpeed;
+    item.appendChild(key);
+    item.appendChild(value);
+    legend.appendChild(item);
+  }
+});
+//change mouse when hovering over sensor
+map.on('mouseenter', 'sensor', function() {
+  map.getCanvas().style.cursor = 'pointer';
+});
+//change mouse when not hovering over sensor
+map.on('mouseleave', 'sensor', function() {
+  map.getCanvas().style.cursor = '';
+});
+//add click function which shows the site ID
+map.on('click', 'sensor', function(e) {
+  new mapboxgl.Popup()
+    .setLngLat(e.lngLat)
+    .setHTML(e.features[0].properties.sensor_address)
+    .addTo(map);
+});
+//add zoom and orientation controls
+map.addControl(new mapboxgl.NavigationControl())
+
+map.addControl(new mapboxgl.FullscreenControl({
+  container: document.querySelector('body')
+}));
+
+</script>
+
+</body>
+
+</html>
